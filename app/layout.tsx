@@ -4,7 +4,8 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Riichi Mahjong Tools",
-  description: "Riichi mahjong tools and simulators.",
+  description:
+    "Riichi mahjong tools, starting with a Mahjong Soul rank simulator.",
 };
 
 export default function RootLayout({
@@ -12,12 +13,10 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const gaId = "G-91YTQGX1G2";
-
   return (
     <html lang="ja">
       <body>{children}</body>
-      <GoogleAnalytics gaId={gaId} />
+      <GoogleAnalytics gaId="G-49ZGSRG5HZ" />
     </html>
   );
 }
