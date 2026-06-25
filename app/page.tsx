@@ -2,6 +2,7 @@
 
 /* eslint-disable react-hooks/set-state-in-effect */
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 type GameType = "East-South" | "East-Only";
@@ -1565,12 +1566,12 @@ export default function Home() {
             <p className="mb-3 text-sm text-neutral-400">
               {text.influenceLinkDescription}
             </p>
-            <a
+            <Link
               className="inline-block rounded-lg border border-neutral-700 px-4 py-2 text-sm font-medium text-neutral-100 hover:bg-neutral-800"
               href={influenceHref}
             >
               {text.influenceLink}
-            </a>
+            </Link>
           </div>
         </section>
 
