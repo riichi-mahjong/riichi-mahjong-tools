@@ -1,36 +1,93 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Riichi Mahjong Tools
 
-## Getting Started
+Public web tools for riichi mahjong calculation and analysis.
 
-First, run the development server:
+Website: https://riichi-mahjong.github.io/riichi-mahjong-tools/
+
+## Tools
+
+### Mahjong Soul Rank Simulator v0.1
+
+URL: https://riichi-mahjong.github.io/riichi-mahjong-tools/
+
+A simulator for estimating Mahjong Soul rank progression under different room and game-length settings.
+
+Main features:
+
+* East-South and East-Only simulation
+* Gold Room and Jade Room placement distributions
+* G/L per round support
+* Rounding correction support
+* Rank-up and rank-down distribution
+* Final, highest, and lowest rank distribution
+* First-reach statistics
+* Expected point change by rank
+
+### Tsumo Win Probability Calculator v0.1
+
+URL: https://riichi-mahjong.github.io/riichi-mahjong-tools/tsumo/
+
+A calculator for estimating tsumo probability and multiple-riichi outcomes.
+
+Main features:
+
+* Single-riichi tsumo probability
+* Ippatsu tsumo probability
+* Multiple-riichi outcome calculation
+* Win rate, tsumo rate, ron win rate, deal-in rate, and no-win rate
+* English/Japanese language switch
+* Approximate current turn display from remaining live-wall tiles
+
+Calculation warning:
+
+This tool is under development. The calculation logic may contain mistakes, including simulation or implementation bugs, so the displayed values may not match the intended probabilities.
+
+### G/L and Rounding Impact Checker
+
+URL: https://riichi-mahjong.github.io/riichi-mahjong-tools/influence/
+
+A checker for seeing how G/L per round and rounding correction affect stable-rank estimates.
+
+Main features:
+
+* Compare placement-only stable-rank estimate
+* Include G/L per round
+* Include rounding correction
+* Check how much these assumptions affect the estimate
+
+## Development
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Run locally:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```text
+http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Check code:
 
-## Learn More
+```bash
+npm run lint
+npm run build
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Deployment
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+This project is deployed to GitHub Pages using GitHub Actions.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The site uses Next.js static export.
 
-## Deploy on Vercel
+## GitHub / Bug reports
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Code forks, bug reports, and improvement suggestions are welcome through GitHub Issues.
