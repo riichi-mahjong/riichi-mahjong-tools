@@ -8,9 +8,9 @@ Website: https://riichi-mahjong.github.io/riichi-mahjong-tools/
 
 ### Mahjong Soul Rank Simulator v0.1
 
-URL: https://riichi-mahjong.github.io/riichi-mahjong-tools/
+URL: https://riichi-mahjong.github.io/riichi-mahjong-tools/tools/rank-simulator/
 
-A simulator for estimating Mahjong Soul rank progression under different room and game-length settings.
+Estimate Mahjong Soul rank progression under different room, game-length, placement-rate, and score-gain assumptions.
 
 Main features:
 
@@ -25,9 +25,9 @@ Main features:
 
 ### Tsumo Win Probability Calculator v0.1
 
-URL: https://riichi-mahjong.github.io/riichi-mahjong-tools/tsumo/
+URL: https://riichi-mahjong.github.io/riichi-mahjong-tools/tools/tsumo/
 
-A calculator for estimating tsumo probability and multiple-riichi outcomes.
+Estimate tsumo probability and multiple-riichi outcomes.
 
 Main features:
 
@@ -41,19 +41,6 @@ Main features:
 Calculation warning:
 
 This tool is under development. The calculation logic may contain mistakes, including simulation or implementation bugs, so the displayed values may not match the intended probabilities.
-
-### G/L and Rounding Impact Checker
-
-URL: https://riichi-mahjong.github.io/riichi-mahjong-tools/influence/
-
-A checker for seeing how G/L per round and rounding correction affect stable-rank estimates.
-
-Main features:
-
-* Compare placement-only stable-rank estimate
-* Include G/L per round
-* Include rounding correction
-* Check how much these assumptions affect the estimate
 
 ## Development
 
@@ -88,6 +75,6 @@ This project is deployed to GitHub Pages using GitHub Actions.
 
 The site uses Next.js static export.
 
-## GitHub / Bug reports
+## Feedback
 
-Code forks, bug reports, and improvement suggestions are welcome through GitHub Issues.
+Bug reports and improvement suggestions are welcome through GitHub Issues.
