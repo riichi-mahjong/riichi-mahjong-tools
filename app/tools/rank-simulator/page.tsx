@@ -11,7 +11,7 @@ type Locale = "ja" | "en";
 const DEFAULT_SIMULATION_COUNT = 100_000;
 const MAX_SIMULATION_COUNT = 100_000;
 const RANDOM_SEED = 123;
-const CEILING_CORRECTION = 0.45;
+const CEILING_CORRECTION = 0.5;
 const SETTINGS_STORAGE_KEY = "mahjong-soul-rank-simulator-v0.1-settings";
 const LANGUAGE_STORAGE_KEY = "riichi-mahjong-tools-language";
 const GITHUB_URL = "https://github.com/riichi-mahjong/riichi-mahjong-tools";
@@ -201,7 +201,7 @@ const TEXT = {
     jadeGlPerRound: "Jade G/L per round",
     correctionTitle: "G/L and rounding correction",
     correctionNote:
-      "Mahjong Soul converts score gain/loss into rank points and rounds up the score-derived points. This simulator converts G/L per round into rank points and adds a fixed +0.45 pt/game rounding correction.",
+      "Mahjong Soul converts score gain/loss into rank points and rounds up the score-derived points. This simulator converts G/L per round into rank points and adds a fixed +0.5 pt/game rounding correction.",
     influenceLink: "Check the influence of G/L and rounding",
     influenceLinkDescription:
       "Compare stable-rank estimates with and without G/L per round and rounding correction.",
@@ -270,7 +270,7 @@ const TEXT = {
     jadeGlPerRound: "玉の間 局収支",
     correctionTitle: "局収支と切り上げ補正について",
     correctionNote:
-      "雀魂では素点由来の段位ポイントが加算され、計算時に切り上げが入るため、このシミュレーターでは局収支から計算したptと切り上げ補正 +0.45 pt/戦 を段位ポイントに加えています。",
+      "雀魂では素点由来の段位ポイントが加算され、計算時に切り上げが入るため、このシミュレーターでは局収支から計算したptと切り上げ補正 +0.5 pt/戦 を段位ポイントに加えています。",
     influenceLink: "局収支・切り上げ補正の影響を見る",
     influenceLinkDescription:
       "局収支と切り上げ補正を入れた場合・入れない場合の安定段位を比較できます。",
@@ -1247,7 +1247,7 @@ export default function Home() {
       ? estimateStableRank(input, locale)
       : text.stableRankUnavailable;
 
-  const influenceHref = `/influence?gameType=${encodeURIComponent(
+  const influenceHref = `/tools/rank-simulator/influence/?gameType=${encodeURIComponent(
     gameType
   )}&p1=${encodeURIComponent(queryNumber(jadeFirst))}&p2=${encodeURIComponent(
     queryNumber(jadeSecond)
@@ -2057,3 +2057,4 @@ function FirstReachTable({
     </section>
   );
 }
+

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useMemo, useState } from "react";
 
@@ -37,7 +37,7 @@ const text = {
     title: "Tsumo Win Probability Calculator v0.1",
     subtitle:
       "Estimate single-riichi tsumo probability and multiple-riichi outcomes such as win, tsumo, ron win, deal-in, and no-win rates.",
-    language: "Language",
+    languageButton: "日本語",
     single: "Single riichi",
     multiple: "Multiple riichi",
     inputs: "Inputs",
@@ -74,8 +74,8 @@ const text = {
     modelNotes:
       "This tool is under development. The calculation logic may contain mistakes, including simulation or implementation bugs, so the displayed values may not match the intended probabilities. The calculation also assumes no calls are made by any player.",
     multipleNotes: "For multiple riichi, non-riichi players are assumed not to deal in.",
-    reportTitle: "GitHub / Bug reports",
-    reportPrefix: "Fork the code, report bugs, or suggest improvements ",
+    reportTitle: "GitHub / Issues / Pull requests",
+    reportPrefix: "Pull requests, bug reports, and improvement suggestions are welcome ",
     reportLink: "here",
     reportSuffix: ".",
   },
@@ -83,7 +83,7 @@ const text = {
     title: "ツモ率計算ツール v0.1",
     subtitle:
       "一人リーチ時のツモ率と、複数リーチ時の和了・ツモ・ロン和了・放銃・流局率を計算します。",
-    language: "言語",
+    languageButton: "English",
     single: "一人リーチ",
     multiple: "複数リーチ",
     inputs: "入力",
@@ -120,8 +120,8 @@ const text = {
     modelNotes:
       "このツールは開発中です。計算ロジックやシミュレーションの実装に誤りが含まれる可能性があり、表示結果が意図した確率と一致しない場合があります。また、誰も副露しないと仮定しています。",
     multipleNotes: "複数リーチでは、非リーチ者は放銃しないと仮定しています。",
-    reportTitle: "GitHub・不具合報告",
-    reportPrefix: "コードのフォーク、不具合報告、改善提案は",
+    reportTitle: "GitHub・不具合報告・Pull Request",
+    reportPrefix: "Pull Request、不具合報告、改善提案は",
     reportLink: "こちら",
     reportSuffix: "。",
   },
@@ -153,7 +153,13 @@ function normalizedInput(value: string, min: number, max: number): string {
   return String(parsed);
 }
 
-function stepInput(value: string, delta: number, fallback: number, min: number, max: number): string {
+function stepInput(
+  value: string,
+  delta: number,
+  fallback: number,
+  min: number,
+  max: number
+): string {
   const parsed = readIntegerInput(value);
   const base = parsed === null ? fallback : Math.max(min, Math.min(max, parsed));
   const next = Math.max(min, Math.min(max, base + delta));
@@ -187,7 +193,12 @@ function logChoose(n: number, r: number): number {
   return total;
 }
 
-function chooseRatio(topN: number, topR: number, bottomN: number, bottomR: number): number {
+function chooseRatio(
+  topN: number,
+  topR: number,
+  bottomN: number,
+  bottomR: number
+): number {
   const value = logChoose(topN, topR) - logChoose(bottomN, bottomR);
 
   if (!Number.isFinite(value)) return 0;
@@ -222,8 +233,13 @@ function drawProb(params: {
 
   const nonLiveUnknown = totalUnknown - remainingLiveWallTiles;
 
-  if (remainingLiveWallTiles <= 0 || winningTiles <= 0 || selfDraws <= 0) return 0;
-  if (winningTiles > totalUnknown) return null;
+  if (remainingLiveWallTiles <= 0 || winningTiles <= 0 || selfDraws <= 0) {
+    return 0;
+  }
+
+  if (winningTiles > totalUnknown) {
+    return null;
+  }
 
   let prob = 0;
 
@@ -317,7 +333,8 @@ function exactRiichiPlayers(params: {
     }
 
     for (const state of states.values()) {
-      const remainingUnknown = state.waits.reduce((sum, wait) => sum + wait, 0) + state.neutral;
+      const remainingUnknown =
+        state.waits.reduce((sum, wait) => sum + wait, 0) + state.neutral;
 
       if (remainingUnknown <= 0) continue;
 
@@ -350,7 +367,10 @@ function exactRiichiPlayers(params: {
     states = newStates;
   }
 
-  const noWin = Array.from(states.values()).reduce((sum, state) => sum + state.prob, 0);
+  const noWin = Array.from(states.values()).reduce(
+    (sum, state) => sum + state.prob,
+    0
+  );
 
   return { tsumo, ronWin, gotRonned, noWin };
 }
@@ -361,21 +381,42 @@ function pct(value: number | null | undefined): string {
   return `${(100 * value).toFixed(2)}%`;
 }
 
-function addProb(a: number | null | undefined, b: number | null | undefined): number | undefined {
-  if (a === null || a === undefined || b === null || b === undefined) return undefined;
+function addProb(
+  a: number | null | undefined,
+  b: number | null | undefined
+): number | undefined {
+  if (a === null || a === undefined || b === null || b === undefined) {
+    return undefined;
+  }
 
   return a + b;
 }
 
+function numberInputClasses(isValid: boolean) {
+  return isValid
+    ? "w-full rounded-xl border border-neutral-700 bg-neutral-950 px-4 py-2 text-neutral-100"
+    : "w-full rounded-xl border border-red-700 bg-red-950/40 px-4 py-2 text-red-100";
+}
+
+function stepButtonClasses() {
+  return "h-11 rounded-xl border border-neutral-700 bg-neutral-950 px-3 text-lg font-bold text-neutral-100 hover:bg-neutral-800";
+}
+
 export default function TsumoPage() {
-  const [language, setLanguage] = useState<Language>("en");
+  const [language, setLanguage] = useState<Language>("ja");
   const [mode, setMode] = useState<Mode>("single");
 
-  const [remainingLiveWallTilesInput, setRemainingLiveWallTilesInput] = useState("20");
+  const [remainingLiveWallTilesInput, setRemainingLiveWallTilesInput] =
+    useState("20");
   const [yourWinningTilesInput, setYourWinningTilesInput] = useState("6");
 
   const [opponentRiichi, setOpponentRiichi] = useState([true, false, false]);
-  const [waitsByPlayerInput, setWaitsByPlayerInput] = useState(["4", "4", "4", "4"]);
+  const [waitsByPlayerInput, setWaitsByPlayerInput] = useState([
+    "4",
+    "4",
+    "4",
+    "4",
+  ]);
   const [nextDrawPlayer, setNextDrawPlayer] = useState(1);
 
   const t = text[language];
@@ -393,7 +434,8 @@ export default function TsumoPage() {
     isValidIntegerInput(value, 0, 99)
   );
 
-  const remainingLiveWallTiles = readIntegerInput(remainingLiveWallTilesInput) ?? 0;
+  const remainingLiveWallTiles =
+    readIntegerInput(remainingLiveWallTilesInput) ?? 0;
   const yourWinningTiles = readIntegerInput(yourWinningTilesInput) ?? 0;
 
   const waitsByPlayer = useMemo(() => {
@@ -415,7 +457,8 @@ export default function TsumoPage() {
     return (70 - remainingLiveWallTiles) / 4;
   }, [isRemainingValid, remainingLiveWallTiles]);
 
-  const ippatsuDrawCount = isRemainingValid && remainingLiveWallTiles >= 4 ? 1 : 0;
+  const ippatsuDrawCount =
+    isRemainingValid && remainingLiveWallTiles >= 4 ? 1 : 0;
 
   const riichiPlayers = useMemo(() => {
     const players = [0];
@@ -548,640 +591,497 @@ export default function TsumoPage() {
   }
 
   return (
-    <main className="page">
-      <section className="hero">
-        <div className="topbar">
-          <label className="language">
-            <span>{t.language}</span>
-            <select
-              value={language}
-              onChange={(event) => setLanguage(event.target.value as Language)}
+    <main className="min-h-screen bg-neutral-950 px-6 py-8 text-neutral-100">
+      <div className="mx-auto max-w-6xl space-y-8">
+        <header className="space-y-4">
+          <div className="flex flex-wrap items-center justify-end gap-4">
+            <button
+              className="rounded-xl border border-neutral-700 px-4 py-2 text-sm text-neutral-200 hover:bg-neutral-900"
+              type="button"
+              onClick={() => setLanguage(language === "ja" ? "en" : "ja")}
             >
-              <option value="en">English</option>
-              <option value="ja">日本語</option>
-            </select>
-          </label>
-        </div>
+              {t.languageButton}
+            </button>
+          </div>
 
-        <h1>{t.title}</h1>
-        <p className="subtitle">{t.subtitle}</p>
-      </section>
+          <div className="space-y-3">
+            <h1 className="text-3xl font-bold">{t.title}</h1>
+            <p className="max-w-3xl text-neutral-300">{t.subtitle}</p>
+          </div>
+        </header>
 
-      <section className="card">
-        <div className="modeButtons">
-          <button className={mode === "single" ? "active" : ""} onClick={() => setMode("single")}>
-            {t.single}
-          </button>
-          <button
-            className={mode === "multiple" ? "active" : ""}
-            onClick={() => setMode("multiple")}
-          >
-            {t.multiple}
-          </button>
-        </div>
-      </section>
+        <section className="rounded-2xl border border-neutral-800 bg-neutral-900 p-6">
+          <div className="flex flex-wrap gap-3">
+            <button
+              className={
+                mode === "single"
+                  ? "rounded-xl bg-neutral-100 px-4 py-2 font-semibold text-neutral-950"
+                  : "rounded-xl border border-neutral-700 px-4 py-2 font-semibold text-neutral-200 hover:bg-neutral-800"
+              }
+              type="button"
+              onClick={() => setMode("single")}
+            >
+              {t.single}
+            </button>
+            <button
+              className={
+                mode === "multiple"
+                  ? "rounded-xl bg-neutral-100 px-4 py-2 font-semibold text-neutral-950"
+                  : "rounded-xl border border-neutral-700 px-4 py-2 font-semibold text-neutral-200 hover:bg-neutral-800"
+              }
+              type="button"
+              onClick={() => setMode("multiple")}
+            >
+              {t.multiple}
+            </button>
+          </div>
+        </section>
 
-      <section className={mode === "single" ? "grid singleGrid" : "grid"}>
-        <div className="card">
-          <h2>{t.inputs}</h2>
+        <section
+          className={
+            mode === "single"
+              ? "grid gap-6 lg:grid-cols-[minmax(0,560px)] lg:justify-center"
+              : "grid gap-6 lg:grid-cols-2"
+          }
+        >
+          <div className="rounded-2xl border border-neutral-800 bg-neutral-900 p-6">
+            <h2 className="mb-4 text-xl font-semibold">{t.inputs}</h2>
 
-          <label className="field">
-            <span>{t.remaining}</span>
-            <div className="numberControl">
-              <button
-                type="button"
-                className="stepButton"
-                onClick={() =>
-                  setRemainingLiveWallTilesInput(
-                    stepInput(remainingLiveWallTilesInput, -1, 0, 0, MAX_REMAINING_AFTER_RIICHI)
-                  )
-                }
-              >
-                −
-              </button>
-              <input
-                className={!isRemainingValid ? "invalidInput" : ""}
-                type="text"
-                inputMode="numeric"
-                pattern="[0-9]*"
-                value={remainingLiveWallTilesInput}
-                onChange={(event) => setRemainingLiveWallTilesInput(event.target.value)}
-                onBlur={() =>
-                  setRemainingLiveWallTilesInput(
-                    normalizedInput(remainingLiveWallTilesInput, 0, MAX_REMAINING_AFTER_RIICHI)
-                  )
-                }
-              />
-              <button
-                type="button"
-                className="stepButton"
-                onClick={() =>
-                  setRemainingLiveWallTilesInput(
-                    stepInput(remainingLiveWallTilesInput, 1, 0, 0, MAX_REMAINING_AFTER_RIICHI)
-                  )
-                }
-              >
-                +
-              </button>
-            </div>
-            <small>{t.remainingHelp}</small>
-            {!isRemainingValid && <small className="errorText">{t.invalidRemaining}</small>}
-          </label>
-
-          {mode === "single" && (
-            <label className="field">
-              <span>{t.waits}</span>
-              <div className="numberControl">
+            <label className="mb-4 block space-y-2">
+              <span className="block text-sm text-neutral-300">
+                {t.remaining}
+              </span>
+              <div className="grid grid-cols-[44px_minmax(0,1fr)_44px] gap-2">
                 <button
+                  className={stepButtonClasses()}
                   type="button"
-                  className="stepButton"
                   onClick={() =>
-                    setYourWinningTilesInput(stepInput(yourWinningTilesInput, -1, 0, 0, 99))
+                    setRemainingLiveWallTilesInput(
+                      stepInput(
+                        remainingLiveWallTilesInput,
+                        -1,
+                        0,
+                        0,
+                        MAX_REMAINING_AFTER_RIICHI
+                      )
+                    )
                   }
                 >
                   −
                 </button>
                 <input
-                  className={!isYourWaitValid ? "invalidInput" : ""}
+                  className={numberInputClasses(isRemainingValid)}
                   type="text"
                   inputMode="numeric"
                   pattern="[0-9]*"
-                  value={yourWinningTilesInput}
-                  onChange={(event) => setYourWinningTilesInput(event.target.value)}
+                  value={remainingLiveWallTilesInput}
+                  onChange={(event) =>
+                    setRemainingLiveWallTilesInput(event.target.value)
+                  }
                   onBlur={() =>
-                    setYourWinningTilesInput(normalizedInput(yourWinningTilesInput, 0, 99))
+                    setRemainingLiveWallTilesInput(
+                      normalizedInput(
+                        remainingLiveWallTilesInput,
+                        0,
+                        MAX_REMAINING_AFTER_RIICHI
+                      )
+                    )
                   }
                 />
                 <button
+                  className={stepButtonClasses()}
                   type="button"
-                  className="stepButton"
                   onClick={() =>
-                    setYourWinningTilesInput(stepInput(yourWinningTilesInput, 1, 0, 0, 99))
+                    setRemainingLiveWallTilesInput(
+                      stepInput(
+                        remainingLiveWallTilesInput,
+                        1,
+                        0,
+                        0,
+                        MAX_REMAINING_AFTER_RIICHI
+                      )
+                    )
                   }
                 >
                   +
                 </button>
               </div>
-              {!isYourWaitValid && <small className="errorText">{t.invalidWait}</small>}
+              <small className="block text-neutral-400">{t.remainingHelp}</small>
+              {!isRemainingValid && (
+                <small className="block font-semibold text-red-300">
+                  {t.invalidRemaining}
+                </small>
+              )}
             </label>
-          )}
+
+            {mode === "single" && (
+              <label className="mb-4 block space-y-2">
+                <span className="block text-sm text-neutral-300">
+                  {t.waits}
+                </span>
+                <div className="grid grid-cols-[44px_minmax(0,1fr)_44px] gap-2">
+                  <button
+                    className={stepButtonClasses()}
+                    type="button"
+                    onClick={() =>
+                      setYourWinningTilesInput(
+                        stepInput(yourWinningTilesInput, -1, 0, 0, 99)
+                      )
+                    }
+                  >
+                    −
+                  </button>
+                  <input
+                    className={numberInputClasses(isYourWaitValid)}
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    value={yourWinningTilesInput}
+                    onChange={(event) =>
+                      setYourWinningTilesInput(event.target.value)
+                    }
+                    onBlur={() =>
+                      setYourWinningTilesInput(
+                        normalizedInput(yourWinningTilesInput, 0, 99)
+                      )
+                    }
+                  />
+                  <button
+                    className={stepButtonClasses()}
+                    type="button"
+                    onClick={() =>
+                      setYourWinningTilesInput(
+                        stepInput(yourWinningTilesInput, 1, 0, 0, 99)
+                      )
+                    }
+                  >
+                    +
+                  </button>
+                </div>
+                {!isYourWaitValid && (
+                  <small className="block font-semibold text-red-300">
+                    {t.invalidWait}
+                  </small>
+                )}
+              </label>
+            )}
+
+            {mode === "multiple" && (
+              <label className="mb-4 block space-y-2">
+                <span className="block text-sm text-neutral-300">
+                  {t.nextDraw}
+                </span>
+                <select
+                  className="w-full rounded-xl border border-neutral-700 bg-neutral-950 px-4 py-2 text-neutral-100"
+                  value={nextDrawPlayer}
+                  onChange={(event) =>
+                    setNextDrawPlayer(Number(event.target.value))
+                  }
+                >
+                  {[0, 1, 2, 3].map((player) => (
+                    <option key={player} value={player}>
+                      {labels[player]}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
+
+            <div className="mt-5 grid gap-4 sm:grid-cols-2">
+              <div className="rounded-xl border border-neutral-800 bg-neutral-950 p-4">
+                <span className="block text-sm text-neutral-400">
+                  {t.futureDraws}
+                </span>
+                <strong className="mt-2 block text-2xl">
+                  {selfDraws === null ? "-" : selfDraws}
+                </strong>
+              </div>
+              <div className="rounded-xl border border-neutral-800 bg-neutral-950 p-4">
+                <span className="block text-sm text-neutral-400">
+                  {t.approxTurn}
+                </span>
+                <strong className="mt-2 block text-2xl">
+                  {approxTurn === null ? "-" : approxTurn.toFixed(1)}
+                </strong>
+              </div>
+            </div>
+          </div>
 
           {mode === "multiple" && (
-            <label className="field">
-              <span>{t.nextDraw}</span>
-              <select
-                value={nextDrawPlayer}
-                onChange={(event) => setNextDrawPlayer(Number(event.target.value))}
-              >
-                {[0, 1, 2, 3].map((player) => (
-                  <option key={player} value={player}>
-                    {labels[player]}
-                  </option>
-                ))}
-              </select>
-            </label>
-          )}
+            <div className="rounded-2xl border border-neutral-800 bg-neutral-900 p-6">
+              <h2 className="mb-4 text-xl font-semibold">{t.riichiPlayers}</h2>
 
-          <div className="summary">
-            <div>
-              <span>{t.futureDraws}</span>
-              <strong>{selfDraws === null ? "-" : selfDraws}</strong>
+              <div className="space-y-4">
+                {[0, 1, 2, 3].map((player) => {
+                  const isWaitValid = isValidIntegerInput(
+                    waitsByPlayerInput[player],
+                    0,
+                    99
+                  );
+
+                  return (
+                    <div
+                      className="grid gap-3 rounded-xl border border-neutral-800 bg-neutral-950 p-4 sm:grid-cols-[1fr_170px] sm:items-center"
+                      key={player}
+                    >
+                      <label className="flex items-center gap-3 font-semibold">
+                        <input
+                          className="h-4 w-4"
+                          type="checkbox"
+                          checked={player === 0 || opponentRiichi[player - 1]}
+                          disabled={player === 0}
+                          onChange={(event) => {
+                            if (player === 0) return;
+
+                            const next = [...opponentRiichi];
+                            next[player - 1] = event.target.checked;
+                            setOpponentRiichi(next);
+                          }}
+                        />
+                        {labels[player]}
+                      </label>
+
+                      <div>
+                        <div className="grid grid-cols-[36px_minmax(0,1fr)_36px] gap-2">
+                          <button
+                            className={stepButtonClasses()}
+                            type="button"
+                            onClick={() => {
+                              const next = [...waitsByPlayerInput];
+                              next[player] = stepInput(
+                                waitsByPlayerInput[player],
+                                -1,
+                                0,
+                                0,
+                                99
+                              );
+                              setWaitsByPlayerInput(next);
+                            }}
+                          >
+                            −
+                          </button>
+                          <input
+                            className={numberInputClasses(isWaitValid)}
+                            aria-label={`${labels[player]} ${t.waitCount}`}
+                            type="text"
+                            inputMode="numeric"
+                            pattern="[0-9]*"
+                            value={waitsByPlayerInput[player]}
+                            onChange={(event) => {
+                              const next = [...waitsByPlayerInput];
+                              next[player] = event.target.value;
+                              setWaitsByPlayerInput(next);
+                            }}
+                            onBlur={() => {
+                              const next = [...waitsByPlayerInput];
+                              next[player] = normalizedInput(
+                                waitsByPlayerInput[player],
+                                0,
+                                99
+                              );
+                              setWaitsByPlayerInput(next);
+                            }}
+                          />
+                          <button
+                            className={stepButtonClasses()}
+                            type="button"
+                            onClick={() => {
+                              const next = [...waitsByPlayerInput];
+                              next[player] = stepInput(
+                                waitsByPlayerInput[player],
+                                1,
+                                0,
+                                0,
+                                99
+                              );
+                              setWaitsByPlayerInput(next);
+                            }}
+                          >
+                            +
+                          </button>
+                        </div>
+                        {!isWaitValid && (
+                          <small className="mt-1 block font-semibold text-red-300">
+                            {t.invalidWait}
+                          </small>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-            <div>
-              <span>{t.approxTurn}</span>
-              <strong>{approxTurn === null ? "-" : approxTurn.toFixed(1)}</strong>
+          )}
+        </section>
+
+        {mode === "single" && (
+          <section className="rounded-2xl border border-neutral-800 bg-neutral-900 p-6">
+            <h2 className="mb-4 text-xl font-semibold">{t.results}</h2>
+
+            {!canCalculateSingle && (
+              <p className="mb-4 font-semibold text-red-300">
+                {t.invalidInputs}
+              </p>
+            )}
+
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[720px] border-collapse text-sm">
+                <thead className="text-neutral-300">
+                  <tr className="border-b border-neutral-800">
+                    <th className="py-2 text-left">{t.case}</th>
+                    <th className="py-2 text-right">{t.overall}</th>
+                    <th className="py-2 text-right">{t.ippatsuTsumo}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {singleResults.map((result) => (
+                    <tr
+                      className="border-b border-neutral-800/70"
+                      key={result.key}
+                    >
+                      <td className="py-3 align-top">
+                        {caseLabel(result.key)}
+                        {result.error && (
+                          <small className="mt-1 block font-semibold text-red-300">
+                            {result.error}
+                          </small>
+                        )}
+                      </td>
+                      <td className="py-3 text-right align-top">
+                        {result.error ? t.invalidShort : pct(result.overall)}
+                      </td>
+                      <td className="py-3 text-right align-top">
+                        {result.error
+                          ? t.invalidShort
+                          : pct(result.ippatsuTsumo)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-          </div>
-        </div>
+          </section>
+        )}
 
         {mode === "multiple" && (
-          <div className="card">
-            <h2>{t.riichiPlayers}</h2>
+          <section className="rounded-2xl border border-neutral-800 bg-neutral-900 p-6">
+            <h2 className="mb-4 text-xl font-semibold">{t.results}</h2>
 
-            {[0, 1, 2, 3].map((player) => {
-              const isWaitValid = isValidIntegerInput(waitsByPlayerInput[player], 0, 99);
+            {!canCalculateMultiple && (
+              <p className="mb-4 font-semibold text-red-300">
+                {t.invalidInputs}
+              </p>
+            )}
 
-              return (
-                <div className="playerRow" key={player}>
-                  <label>
-                    <input
-                      type="checkbox"
-                      checked={player === 0 || opponentRiichi[player - 1]}
-                      disabled={player === 0}
-                      onChange={(event) => {
-                        if (player === 0) return;
+            <div className="space-y-8">
+              {multipleResults.map((caseResult) => (
+                <div key={caseResult.key}>
+                  <h3 className="mb-3 text-lg font-semibold">
+                    {caseLabel(caseResult.key)}
+                  </h3>
 
-                        const next = [...opponentRiichi];
-                        next[player - 1] = event.target.checked;
-                        setOpponentRiichi(next);
-                      }}
-                    />
-                    {labels[player]}
-                  </label>
+                  {caseResult.error && (
+                    <p className="font-semibold text-red-300">
+                      {caseResult.error}
+                    </p>
+                  )}
 
-                  <div>
-                    <div className="numberControl compactNumberControl">
-                      <button
-                        type="button"
-                        className="stepButton"
-                        onClick={() => {
-                          const next = [...waitsByPlayerInput];
-                          next[player] = stepInput(waitsByPlayerInput[player], -1, 0, 0, 99);
-                          setWaitsByPlayerInput(next);
-                        }}
-                      >
-                        −
-                      </button>
-                      <input
-                        className={!isWaitValid ? "invalidInput" : ""}
-                        aria-label={`${labels[player]} ${t.waitCount}`}
-                        type="text"
-                        inputMode="numeric"
-                        pattern="[0-9]*"
-                        value={waitsByPlayerInput[player]}
-                        onChange={(event) => {
-                          const next = [...waitsByPlayerInput];
-                          next[player] = event.target.value;
-                          setWaitsByPlayerInput(next);
-                        }}
-                        onBlur={() => {
-                          const next = [...waitsByPlayerInput];
-                          next[player] = normalizedInput(waitsByPlayerInput[player], 0, 99);
-                          setWaitsByPlayerInput(next);
-                        }}
-                      />
-                      <button
-                        type="button"
-                        className="stepButton"
-                        onClick={() => {
-                          const next = [...waitsByPlayerInput];
-                          next[player] = stepInput(waitsByPlayerInput[player], 1, 0, 0, 99);
-                          setWaitsByPlayerInput(next);
-                        }}
-                      >
-                        +
-                      </button>
-                    </div>
-                    {!isWaitValid && <small className="errorText">{t.invalidWait}</small>}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </section>
-
-      {mode === "single" && (
-        <section className="card">
-          <h2>{t.results}</h2>
-
-          {!canCalculateSingle && <p className="error">{t.invalidInputs}</p>}
-
-          <div className="tableWrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>{t.case}</th>
-                  <th>{t.overall}</th>
-                  <th>{t.ippatsuTsumo}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {singleResults.map((result) => (
-                  <tr key={result.key}>
-                    <td>
-                      {caseLabel(result.key)}
-                      {result.error && <small className="caseError">{result.error}</small>}
-                    </td>
-                    <td>{result.error ? t.invalidShort : pct(result.overall)}</td>
-                    <td>{result.error ? t.invalidShort : pct(result.ippatsuTsumo)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
-      )}
-
-      {mode === "multiple" && (
-        <section className="card">
-          <h2>{t.results}</h2>
-
-          {!canCalculateMultiple && <p className="error">{t.invalidInputs}</p>}
-
-          {multipleResults.map((caseResult) => (
-            <div className="caseBlock" key={caseResult.key}>
-              <h3>{caseLabel(caseResult.key)}</h3>
-
-              {caseResult.error && <p className="error">{caseResult.error}</p>}
-
-              {caseResult.result !== null && (
-                <div className="tableWrap">
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>{t.player}</th>
-                        <th>{t.winRate}</th>
-                        <th>{t.tsumo}</th>
-                        <th>{t.ronWin}</th>
-                        <th>{t.gotRonned}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {riichiPlayers.map((player) => {
-                        const tsumoProb = caseResult.result?.tsumo[player];
-                        const ronProb = caseResult.result?.ronWin[player];
-                        const winProb = addProb(tsumoProb, ronProb);
-
-                        return (
-                          <tr key={player}>
-                            <td>{labels[player]}</td>
-                            <td>{pct(winProb)}</td>
-                            <td>{pct(tsumoProb)}</td>
-                            <td>{pct(ronProb)}</td>
-                            <td>{pct(caseResult.result?.gotRonned[player])}</td>
+                  {caseResult.result !== null && (
+                    <div className="overflow-x-auto">
+                      <table className="w-full min-w-[840px] border-collapse text-sm">
+                        <thead className="text-neutral-300">
+                          <tr className="border-b border-neutral-800">
+                            <th className="py-2 text-left">{t.player}</th>
+                            <th className="py-2 text-right">{t.winRate}</th>
+                            <th className="py-2 text-right">{t.tsumo}</th>
+                            <th className="py-2 text-right">{t.ronWin}</th>
+                            <th className="py-2 text-right">{t.gotRonned}</th>
+                            <th className="py-2 text-right">{t.noWin}</th>
                           </tr>
-                        );
-                      })}
-                      <tr>
-                        <td>
-                          <strong>{t.noWin}</strong>
-                        </td>
-                        <td colSpan={4}>
-                          <strong>{pct(caseResult.result.noWin)}</strong>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
+                        </thead>
+                        <tbody>
+                          {riichiPlayers.map((player) => {
+                            const tsumoProb = caseResult.result?.tsumo[player];
+                            const ronProb = caseResult.result?.ronWin[player];
+                            const winProb = addProb(tsumoProb, ronProb);
+
+                            return (
+                              <tr
+                                className="border-b border-neutral-800/70"
+                                key={player}
+                              >
+                                <td className="py-3">{labels[player]}</td>
+                                <td className="py-3 text-right">
+                                  {pct(winProb)}
+                                </td>
+                                <td className="py-3 text-right">
+                                  {pct(tsumoProb)}
+                                </td>
+                                <td className="py-3 text-right">
+                                  {pct(ronProb)}
+                                </td>
+                                <td className="py-3 text-right">
+                                  {pct(caseResult.result?.gotRonned[player])}
+                                </td>
+                                <td className="py-3 text-right text-neutral-500">
+                                  -
+                                </td>
+                              </tr>
+                            );
+                          })}
+                          <tr className="border-b border-neutral-800/70 bg-neutral-950/40">
+                            <td className="py-3" colSpan={5}></td>
+                            <td className="py-3 text-right font-semibold">
+                              {pct(caseResult.result.noWin)}
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
                 </div>
-              )}
+              ))}
             </div>
-          ))}
+          </section>
+        )}
+
+        <section className="rounded-2xl border border-amber-900 bg-amber-950/30 p-6">
+          <h2 className="mb-3 text-xl font-semibold text-amber-100">
+            {t.modelNotesTitle}
+          </h2>
+          <p className="max-w-4xl text-sm leading-6 text-amber-100/90">
+            {t.modelNotes}
+          </p>
+          {mode === "multiple" && (
+            <p className="mt-3 max-w-4xl text-sm leading-6 text-amber-100/90">
+              {t.multipleNotes}
+            </p>
+          )}
         </section>
-      )}
 
-      <section className="card">
-        <h2>{t.modelNotesTitle}</h2>
-        <p>{t.modelNotes}</p>
-        {mode === "multiple" && <p>{t.multipleNotes}</p>}
-      </section>
-
-      <section className="card reportCard">
-        <h2>{t.reportTitle}</h2>
-        <p>
-          {t.reportPrefix}
-          <a href={REPORT_URL} target="_blank" rel="noreferrer">
-            {t.reportLink}
+        <footer className="border-t border-neutral-800 pt-6 text-center text-sm text-neutral-400">
+          <a
+            className="font-medium text-neutral-200 hover:text-neutral-100"
+            href={REPORT_URL}
+            target="_blank"
+            rel="noreferrer"
+          >
+            {t.reportTitle}
           </a>
-          {t.reportSuffix}
-        </p>
-      </section>
-
-      <style>{`
-        .page {
-          min-height: 100vh;
-          padding: 40px 20px;
-          color: #172033;
-          background:
-            radial-gradient(circle at top left, rgba(47, 117, 86, 0.14), transparent 32rem),
-            linear-gradient(180deg, #f7faf8 0%, #edf4ef 100%);
-          font-family:
-            Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
-            "Segoe UI", sans-serif;
-        }
-
-        .hero,
-        .card,
-        .grid {
-          width: min(1120px, 100%);
-          margin-left: auto;
-          margin-right: auto;
-        }
-
-        .topbar {
-          display: flex;
-          justify-content: flex-end;
-          gap: 16px;
-          align-items: center;
-        }
-
-        h1 {
-          margin: 16px 0 12px;
-          font-size: clamp(2rem, 5vw, 4rem);
-          line-height: 1.05;
-          letter-spacing: -0.04em;
-        }
-
-        h2 {
-          margin: 0 0 18px;
-          font-size: 1.25rem;
-        }
-
-        h3 {
-          margin: 0 0 10px;
-          font-size: 1.05rem;
-        }
-
-        .subtitle {
-          max-width: 820px;
-          margin: 0;
-          color: #4c5b52;
-          font-size: 1.05rem;
-          line-height: 1.7;
-        }
-
-        .language {
-          display: flex;
-          gap: 8px;
-          align-items: center;
-          font-weight: 700;
-        }
-
-        .grid {
-          display: grid;
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-          gap: 18px;
-        }
-
-        .singleGrid {
-          grid-template-columns: minmax(0, 560px);
-          justify-content: center;
-        }
-
-        .card {
-          box-sizing: border-box;
-          margin-top: 18px;
-          padding: 22px;
-          border: 1px solid rgba(23, 32, 51, 0.1);
-          border-radius: 22px;
-          background: rgba(255, 255, 255, 0.9);
-          box-shadow: 0 18px 50px rgba(30, 62, 45, 0.08);
-        }
-
-        .modeButtons {
-          display: flex;
-          justify-content: center;
-          gap: 12px;
-          flex-wrap: wrap;
-        }
-
-        button {
-          font: inherit;
-        }
-
-        .modeButtons button {
-          padding: 12px 16px;
-          border: 1px solid rgba(23, 32, 51, 0.16);
-          border-radius: 999px;
-          background: #ffffff;
-          cursor: pointer;
-          color: #172033;
-          font-weight: 800;
-        }
-
-        .modeButtons button.active {
-          color: white;
-          background: #2f7556;
-          border-color: #2f7556;
-        }
-
-        .field {
-          display: grid;
-          gap: 8px;
-          margin-bottom: 16px;
-          font-weight: 700;
-        }
-
-        small {
-          color: #607167;
-          font-weight: 500;
-          line-height: 1.5;
-        }
-
-        input,
-        select {
-          box-sizing: border-box;
-          width: 100%;
-          padding: 12px 14px;
-          border: 1px solid rgba(23, 32, 51, 0.16);
-          border-radius: 12px;
-          background: #ffffff;
-          color: #172033;
-          font: inherit;
-        }
-
-        input:disabled {
-          background: #eef3ef;
-          color: #6a766f;
-        }
-
-        .invalidInput {
-          border-color: #b94034;
-          background: #fff8f7;
-        }
-
-        .errorText,
-        .caseError {
-          color: #a33a2f;
-          font-weight: 700;
-        }
-
-        .caseError {
-          display: block;
-          margin-top: 6px;
-        }
-
-        .numberControl {
-          display: grid;
-          grid-template-columns: 44px minmax(0, 1fr) 44px;
-          gap: 8px;
-          align-items: center;
-        }
-
-        .compactNumberControl {
-          grid-template-columns: 36px minmax(0, 80px) 36px;
-        }
-
-        .stepButton {
-          height: 44px;
-          border: 1px solid rgba(23, 32, 51, 0.16);
-          border-radius: 12px;
-          background: #f4f8f5;
-          color: #172033;
-          cursor: pointer;
-          font-size: 1.2rem;
-          font-weight: 900;
-          line-height: 1;
-        }
-
-        .stepButton:hover {
-          border-color: #2f7556;
-          background: #edf6f1;
-        }
-
-        .summary {
-          display: grid;
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-          gap: 12px;
-        }
-
-        .summary div {
-          padding: 16px;
-          border-radius: 16px;
-          background: #f0f6f2;
-        }
-
-        .summary span {
-          display: block;
-          color: #5f6f66;
-          font-size: 0.9rem;
-          font-weight: 700;
-        }
-
-        .summary strong {
-          display: block;
-          margin-top: 6px;
-          font-size: 1.45rem;
-        }
-
-        .playerRow {
-          display: grid;
-          grid-template-columns: 1fr 160px;
-          gap: 12px;
-          align-items: center;
-          margin-bottom: 12px;
-        }
-
-        .playerRow label {
-          display: flex;
-          gap: 8px;
-          align-items: center;
-          font-weight: 700;
-          line-height: 1.35;
-        }
-
-        .playerRow input[type="checkbox"] {
-          width: auto;
-          flex: 0 0 auto;
-        }
-
-        .tableWrap {
-          overflow-x: auto;
-        }
-
-        table {
-          width: 100%;
-          min-width: 720px;
-          border-collapse: collapse;
-          margin-top: 12px;
-        }
-
-        th,
-        td {
-          padding: 12px;
-          border-bottom: 1px solid rgba(23, 32, 51, 0.1);
-          text-align: left;
-          vertical-align: top;
-        }
-
-        th {
-          background: #f4f8f5;
-          color: #415249;
-          font-size: 0.86rem;
-          text-transform: uppercase;
-          letter-spacing: 0.04em;
-        }
-
-        .caseBlock {
-          margin-top: 24px;
-        }
-
-        .error {
-          color: #a33a2f;
-          font-weight: 700;
-        }
-
-        p {
-          color: #4c5b52;
-          line-height: 1.7;
-        }
-
-        a {
-          color: #2f7556;
-          font-weight: 800;
-        }
-
-        .reportCard {
-          margin-bottom: 20px;
-        }
-
-        @media (max-width: 780px) {
-          .page {
-            padding: 28px 14px;
-          }
-
-          .topbar,
-          .grid {
-            display: block;
-          }
-
-          .language {
-            margin-top: 14px;
-          }
-
-          .summary {
-            grid-template-columns: 1fr;
-          }
-
-          .playerRow {
-            grid-template-columns: 1fr;
-          }
-
-          .compactNumberControl {
-            grid-template-columns: 44px minmax(0, 1fr) 44px;
-          }
-        }
-      `}</style>
+          <p className="mt-2">
+            {t.reportPrefix}
+            <a
+              className="font-medium text-neutral-200 hover:text-neutral-100"
+              href={REPORT_URL}
+              target="_blank"
+              rel="noreferrer"
+            >
+              {t.reportLink}
+            </a>
+            {t.reportSuffix}
+          </p>
+        </footer>
+      </div>
     </main>
   );
 }
