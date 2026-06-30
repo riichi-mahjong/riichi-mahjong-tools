@@ -407,7 +407,7 @@ export default function TsumoPage() {
   const [mode, setMode] = useState<Mode>("single");
 
   const [remainingLiveWallTilesInput, setRemainingLiveWallTilesInput] =
-    useState("20");
+    useState("36");
   const [yourWinningTilesInput, setYourWinningTilesInput] = useState("6");
 
   const [opponentRiichi, setOpponentRiichi] = useState([true, false, false]);
